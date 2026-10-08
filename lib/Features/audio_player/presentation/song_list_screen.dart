@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:media_player_app/Features/audio_player/Logic/audio_bloc.dart';
 import 'package:media_player_app/Features/audio_player/Logic/audio_event.dart';
 import 'package:media_player_app/Features/audio_player/Logic/audio_state.dart';
+import '../Logic/player_bloc.dart';
+import '../Logic/player_event.dart';
+import '../Logic/player_state.dart';
 
 class SongListScreen extends StatelessWidget {
-  const new({super.key});
+  const SongListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +58,7 @@ class SongListScreen extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   onTap: () {
-                    // We will integrate audio playback on song tap next!
+                    context.read<PlayerBloc>().add(PlaySongEvent(song));
                   },
                 );
               },
@@ -65,6 +67,44 @@ class SongListScreen extends StatelessWidget {
           return const Center(child: Text('Press fetch to load songs.'));
         },
       ),
+      bottomNavigationBar: BlocBuilder<PlayerBloc,PlayerState> (builder: (context, state ){
+        if (state  is PlayerStatusState){
+          return Container(
+            height: 60,
+            color: Colors.blueGrey[900],
+            child: Row(
+              children: [
+                const Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Icon(Icons.music_note, color: Colors.white),), 
+                Expanded(child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+          Text(
+            state.currentSong.title,
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          Text(
+            state.currentSong.artist,
+            style: const TextStyle(color: Colors.white70, fontSize: 12),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+                )),
+               IconButton(onPressed: (){
+                context.read<PlayerBloc>().add(TogglePlayPauseEvent());
+               }, icon: Icon(
+                  state.isPlaying ? Icons.pause_circle : Icons.play_circle
+                ))
+              ],
+            ),
+          );
+        }
+        return const SizedBox.shrink();
+        
+      }),
     );
   }
 }

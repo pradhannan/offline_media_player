@@ -1,3 +1,4 @@
+// ignore: unused_import
 import 'package:equatable/equatable.dart';
 import 'package:media_player_app/Features/audio_player/domain/song_model.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -57,6 +58,7 @@ class AudioRepository {
   );
 
   // If the user cancelled the picker dialog
+  // ignore: unnecessary_null_comparison
   if (result == null || result.isEmpty) {
     return [];
   }

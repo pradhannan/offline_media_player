@@ -2,25 +2,51 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:media_player_app/Features/audio_player/Logic/audio_bloc.dart';
 import 'package:media_player_app/Features/audio_player/Logic/audio_event.dart';
+import 'package:media_player_app/Features/audio_player/Logic/player_bloc.dart';
+import 'package:media_player_app/Features/audio_player/data/audio_player_repository.dart';
 import 'package:media_player_app/Features/audio_player/data/audio_repository.dart';
 import 'package:media_player_app/Features/audio_player/presentation/song_list_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  final audioRepository = AudioRepository();
+  final audioPlayerRepository = AudioPlayerRepository();
+
+  runApp(
+    MyApp(
+      audioRepository: audioRepository,
+      audioPlayerRepository: audioPlayerRepository,
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
+  final AudioRepository audioRepository;
+  final AudioPlayerRepository audioPlayerRepository;
+  const MyApp({
+    super.key,
+    required this.audioRepository,
+    required this.audioPlayerRepository,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider(create: (context)=> AudioRepository(),
-    child: BlocProvider(create: (context)=>AudioBloc(audioRepository: context.read<AudioRepository>(),)..add(FetchSongsEvent()),
-    child: MaterialApp(
-      title: 'Offline Media Player',
-      theme: ThemeData.dark(),
-      home: const SongListScreen(),
-    ),),);
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AudioBloc>(
+          create: (context) =>
+              AudioBloc(audioRepository: audioRepository)
+                ..add(FetchSongsEvent()),
+        ),
+        BlocProvider<PlayerBloc>(
+          create: (context) =>
+              PlayerBloc(audioPlayerRepository: audioPlayerRepository),
+        ),
+      ],
+      child: const MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: SongListScreen(),
+      ),
+    );
   }
 }

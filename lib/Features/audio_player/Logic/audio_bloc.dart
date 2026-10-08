@@ -20,6 +20,7 @@ class AudioBloc extends Bloc<AudioEvent, AudioState> {
   }
 
   AudioBloc({required AudioRepository audioRepository})
+    // ignore: prefer_initializing_formals
     : _audioRepository = audioRepository,
       super(AudioInitial()) {
     on<FetchSongsEvent>(_onFetchSongs);
