@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:media_player_app/Features/audio_player/Logic/audio_bloc.dart';
 import 'package:media_player_app/Features/audio_player/Logic/audio_event.dart';
 import 'package:media_player_app/Features/audio_player/Logic/audio_state.dart';
+import 'package:media_player_app/Features/audio_player/presentation/full_player_screen.dart';
+
 import '../Logic/player_bloc.dart';
 import '../Logic/player_event.dart';
 import '../Logic/player_state.dart';
@@ -67,44 +69,94 @@ class SongListScreen extends StatelessWidget {
           return const Center(child: Text('Press fetch to load songs.'));
         },
       ),
-      bottomNavigationBar: BlocBuilder<PlayerBloc,PlayerState> (builder: (context, state ){
-        if (state  is PlayerStatusState){
-          return Container(
-            height: 60,
-            color: Colors.blueGrey[900],
-            child: Row(
-              children: [
-                const Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Icon(Icons.music_note, color: Colors.white),), 
-                Expanded(child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-          Text(
-            state.currentSong.title,
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          Text(
-            state.currentSong.artist,
-            style: const TextStyle(color: Colors.white70, fontSize: 12),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-                )),
-               IconButton(onPressed: (){
-                context.read<PlayerBloc>().add(TogglePlayPauseEvent());
-               }, icon: Icon(
-                  state.isPlaying ? Icons.pause_circle : Icons.play_circle
-                ))
-              ],
-            ),
-          );
-        }
-        return const SizedBox.shrink();
-        
-      }),
+      bottomNavigationBar: BlocBuilder<PlayerBloc, PlayerState>(
+        builder: (context, state) {
+          if (state is PlayerStatusState) {
+            final theme = Theme.of(context);
+            final colors = theme.colorScheme;
+            return SafeArea(
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          const FullPlayerScreen(),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                            const begin = Offset(0.0, 1.0); // Start from bottom
+                            const end = Offset.zero;
+                            const curve = Curves.easeInOut;
+
+                            var tween = Tween(
+                              begin: begin,
+                              end: end,
+                            ).chain(CurveTween(curve: curve));
+
+                            return SlideTransition(
+                              position: animation.drive(tween),
+                              child: child,
+                            );
+                          },
+                    ),
+                  );
+                },
+                child: Container(
+                  height: 60,
+                  color: colors.surface,
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 12),
+                        child: Icon(Icons.music_note, color: colors.primary),
+                      ),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              state.currentSong.title,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: colors.onSurface,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              state.currentSong.artist,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colors.onSurface,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          context.read<PlayerBloc>().add(
+                            TogglePlayPauseEvent(),
+                          );
+                        },
+                        icon: Icon(
+                          state.isPlaying
+                              ? Icons.pause_circle
+                              : Icons.play_circle,
+                          color: colors.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }
+          return const SizedBox.shrink();
+        },
+      ),
     );
   }
 }

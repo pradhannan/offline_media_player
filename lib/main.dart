@@ -6,6 +6,7 @@ import 'package:media_player_app/Features/audio_player/Logic/player_bloc.dart';
 import 'package:media_player_app/Features/audio_player/data/audio_player_repository.dart';
 import 'package:media_player_app/Features/audio_player/data/audio_repository.dart';
 import 'package:media_player_app/Features/audio_player/presentation/song_list_screen.dart';
+import 'Features/Core/app_theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,9 +44,13 @@ class MyApp extends StatelessWidget {
               PlayerBloc(audioPlayerRepository: audioPlayerRepository),
         ),
       ],
-      child: const MaterialApp(
+      child: MaterialApp(
+        title: 'my_offline_media_player',
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode: ThemeMode.dark,
         debugShowCheckedModeBanner: false,
-        home: SongListScreen(),
+        home: const SongListScreen(),
       ),
     );
   }
