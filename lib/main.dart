@@ -5,7 +5,8 @@ import 'package:media_player_app/Features/audio_player/Logic/audio_event.dart';
 import 'package:media_player_app/Features/audio_player/Logic/player_bloc.dart';
 import 'package:media_player_app/Features/audio_player/data/audio_player_repository.dart';
 import 'package:media_player_app/Features/audio_player/data/audio_repository.dart';
-import 'package:media_player_app/Features/audio_player/presentation/song_list_screen.dart';
+import 'package:media_player_app/Features/audio_player/presentation/home_screen.dart';
+
 import 'Features/Core/app_theme.dart';
 
 void main() {
@@ -48,9 +49,9 @@ class MyApp extends StatelessWidget {
         title: 'my_offline_media_player',
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.dark,
+        themeMode: ThemeMode.light,
         debugShowCheckedModeBanner: false,
-        home: const SongListScreen(),
+        home: const HomeScreen(),
       ),
     );
   }

@@ -1,5 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-<uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+<uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />    //on android 13+
+//for older android version we need to provide storage permission
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <application
         android:label="media_player_app"
         android:name="${applicationName}"

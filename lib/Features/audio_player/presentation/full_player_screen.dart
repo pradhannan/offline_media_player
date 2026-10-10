@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:media_player_app/Features/audio_player/presentation/widgets/player_artwork.dart';
-import 'package:media_player_app/Features/audio_player/presentation/widgets/player_primary_controls.dart';
-import 'package:media_player_app/Features/audio_player/presentation/widgets/player_progress_bar.dart';
-import 'package:media_player_app/Features/audio_player/presentation/widgets/player_secondary_control.dart';
-import 'package:media_player_app/Features/audio_player/presentation/widgets/player_top_bar.dart';
-import 'package:media_player_app/Features/audio_player/presentation/widgets/progress_bar_style.dart';
-import 'package:media_player_app/Features/audio_player/presentation/widgets/song_info.dart';
+import 'package:media_player_app/Features/audio_player/presentation/widgets/full_player_screen/player_artwork.dart';
+import 'package:media_player_app/Features/audio_player/presentation/widgets/full_player_screen/player_primary_controls.dart';
+import 'package:media_player_app/Features/audio_player/presentation/widgets/full_player_screen/player_progress_bar.dart';
+import 'package:media_player_app/Features/audio_player/presentation/widgets/full_player_screen/player_secondary_control.dart';
+import 'package:media_player_app/Features/audio_player/presentation/widgets/full_player_screen/player_top_bar.dart';
+import 'package:media_player_app/Features/audio_player/presentation/widgets/full_player_screen/progress_bar_style.dart';
+import 'package:media_player_app/Features/audio_player/presentation/widgets/full_player_screen/song_info.dart';
 
 class FullPlayerScreen extends StatelessWidget {
   const FullPlayerScreen({super.key});
