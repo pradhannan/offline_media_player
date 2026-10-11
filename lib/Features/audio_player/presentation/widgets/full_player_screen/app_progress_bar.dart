@@ -46,9 +46,9 @@ class AppProgressBar extends StatelessWidget {
 
     return SliderTheme(
       data: SliderTheme.of(context).copyWith(
-        trackHeight: 3.0,
-        thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6.0),
-        overlayShape: const RoundSliderOverlayShape(overlayRadius: 12.0),
+        trackHeight: 4.0,
+        thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12.0),
+        overlayShape: const RoundSliderOverlayShape(overlayRadius: 16.0),
         activeTrackColor: colors.primary,
         inactiveTrackColor: colors.primary.withAlpha(50),
         thumbColor: colors.primary,

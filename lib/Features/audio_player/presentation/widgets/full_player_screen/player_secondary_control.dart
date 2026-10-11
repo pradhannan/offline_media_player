@@ -29,7 +29,9 @@ class PlayerSecondaryControls extends StatelessWidget {
       children: [
         // Repeat Mode Toggle
         IconButton(
+            iconSize: 26,
           icon: Icon(
+              
             isRepeat ? Icons.repeat_one_rounded : Icons.repeat_rounded,
           ),
           color: isRepeat ? colors.primary : colors.onSurfaceVariant,
@@ -38,6 +40,7 @@ class PlayerSecondaryControls extends StatelessWidget {
 
         // Favorite Toggle
         IconButton(
+            iconSize: 26,
           icon: Icon(
             isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
           ),
@@ -47,6 +50,7 @@ class PlayerSecondaryControls extends StatelessWidget {
 
         // Queue Button
         IconButton(
+            iconSize: 26,
           icon: const Icon(Icons.queue_music_rounded),
           color: colors.onSurfaceVariant,
           onPressed: onQueueTap,
@@ -54,6 +58,7 @@ class PlayerSecondaryControls extends StatelessWidget {
 
         //  Shuffle Toggle
         IconButton(
+            iconSize: 26,
           icon: const Icon(Icons.shuffle_rounded),
           color: isShuffle ? colors.primary : colors.onSurfaceVariant,
           onPressed: onShuffleToggle,

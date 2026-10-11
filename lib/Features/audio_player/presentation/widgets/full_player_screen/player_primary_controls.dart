@@ -24,7 +24,7 @@ class PlayerPrimaryControls extends StatelessWidget {
       children: [
         // Previous Track Button
         IconButton(
-          iconSize: 36.0,
+          iconSize: 44.0,
           icon: const Icon(Icons.skip_previous_rounded),
           color: colors.onSurface,
           onPressed: onPrevious,
@@ -32,12 +32,14 @@ class PlayerPrimaryControls extends StatelessWidget {
 
         //  Main Play / Pause Button
         Container(
+          width: 78,
+          height: 78,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: colors.primary,
           ),
           child: IconButton(
-            iconSize: 42.0,
+            iconSize: 52.0,
             icon: Icon(
               isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
             ),
@@ -48,7 +50,7 @@ class PlayerPrimaryControls extends StatelessWidget {
 
         //  Next Track Button
         IconButton(
-          iconSize: 36.0,
+          iconSize: 44.0,
           icon: const Icon(Icons.skip_next_rounded),
           color: colors.onSurface,
           onPressed: onNext,

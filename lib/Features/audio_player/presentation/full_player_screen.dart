@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:media_player_app/Features/audio_player/Logic/player_bloc.dart';
+import 'package:media_player_app/Features/audio_player/Logic/player_event.dart';
+import 'package:media_player_app/Features/audio_player/Logic/player_state.dart';
+import 'package:media_player_app/Features/audio_player/domain/song_model.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/full_player_screen/player_artwork.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/full_player_screen/player_primary_controls.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/full_player_screen/player_progress_bar.dart';
@@ -8,7 +13,8 @@ import 'package:media_player_app/Features/audio_player/presentation/widgets/full
 import 'package:media_player_app/Features/audio_player/presentation/widgets/full_player_screen/song_info.dart';
 
 class FullPlayerScreen extends StatelessWidget {
-  const FullPlayerScreen({super.key});
+  final SongModel song;
+  const FullPlayerScreen({super.key, required this.song});
 
   @override
   Widget build(BuildContext context) {
@@ -21,35 +27,59 @@ class FullPlayerScreen extends StatelessWidget {
             children: [
               //TOp bar (arrow+sleep)
               PlayerTopBar(onSleepTimerTap: () {}),
-              
 
               //artwork
-              Expanded(child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12.0),
-                child: PlayerArtwork(imageUrl: null, onTap: () {}),
-              )),
-              
+              SizedBox(
+                height: 340,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 16, bottom: 0),
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: PlayerArtwork( onTap: () {},  songId: int.parse(song.id),),
+                  ),
+                ),
+              ),
 
               //info
               Align(
                 alignment: Alignment.centerLeft,
-                child: SongInfo(title: "PLACE", artist: "PLACE", onTap: () {}),
+                child: SongInfo(title: song.title, artist: song.artist, onTap: () {}),
               ),
-              
+
               //progress
-              PlayerProgressSection(
-                position: const Duration(seconds: 45),
-                duration: const Duration(minutes: 3, seconds: 45),
-                style: ProgressBarStyle.linear,
-                onSeek: (newPosition) {},
-              ),
+             
+BlocBuilder<PlayerBloc, PlayerState>(
+  builder: (context, state) {
+    final isReady = state is PlayerStatusState;
+
+    return PlayerProgressSection(
+      position: isReady ? state.position : Duration.zero,
+      duration: isReady ? state.duration : Duration.zero,
+      style: ProgressBarStyle.linear,
+      onSeek: (newPosition) {
+        context.read<PlayerBloc>().add(
+          SeekPositionEvent(newPosition),
+        );
+      },
+    );
+  },
+),
               //primary control
-              PlayerPrimaryControls(
-                isPlaying: false,
-                onPlayPause: () {},
-                onPrevious: () {},
-                onNext: () {},
-              ),
+              BlocBuilder<PlayerBloc, PlayerState>(
+  builder: (context, state) {
+    return PlayerPrimaryControls(
+      isPlaying:
+          state is PlayerStatusState && state.isPlaying,
+      onPlayPause: () {
+        context.read<PlayerBloc>().add(
+          TogglePlayPauseEvent(),
+        );
+      },
+      onPrevious: () {},
+      onNext: () {},
+    );
+  },
+),
               //secondary control
               PlayerSecondaryControls(
                 isFavorite: false,

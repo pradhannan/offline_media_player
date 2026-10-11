@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 
 class PlayerArtwork extends StatelessWidget {
+  final int songId;
   final String? imageUrl;
   final VoidCallback onTap;
-  const PlayerArtwork({super.key, required this.onTap, this.imageUrl});
+  const PlayerArtwork({super.key, required this.onTap, this.imageUrl, required this.songId,});
 
   @override
   Widget build(BuildContext context) {
@@ -15,27 +17,29 @@ class PlayerArtwork extends StatelessWidget {
       
       child: FittedBox(fit: BoxFit.contain,
       child: SizedBox(
-        height: 300,
-        width: 300,
+        height: 325,
+        width: 325,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
           child: Container(
             color: colors.surfaceContainerHighest,
             child: Container(
               color: colors.surfaceContainerHighest,
-              child: imageUrl != null && imageUrl!.isNotEmpty
-                  ? Image.network(
-                      imageUrl!,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          _buildPlaceholder(colors),
-                    )
-                  : _buildPlaceholder(colors),
+              child: QueryArtworkWidget(
+              id: songId,
+              type: ArtworkType.AUDIO,
+                 quality: 100,
+  size: 600,
+  artworkWidth: 325,
+  artworkHeight: 325,
+  artworkQuality: FilterQuality.high,
+              keepOldArtwork: true,
+              nullArtworkWidget: _buildPlaceholder(colors),
             ),
         
           ),
         ),
-      ),),
+      ),)),
     );
 
 
