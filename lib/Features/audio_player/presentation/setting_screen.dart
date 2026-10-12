@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:media_player_app/Features/audio_player/presentation/pages_of_settings_page/about.dart';
+import 'package:media_player_app/Features/audio_player/presentation/pages_of_settings_page/appearance_setting.dart';
+import 'package:media_player_app/Features/audio_player/presentation/widgets/setting_pages/container_settings.dart';
 
 class SettingScreen extends StatelessWidget {
   const SettingScreen({super.key});
@@ -23,12 +26,43 @@ class SettingScreen extends StatelessWidget {
               collapseMode: CollapseMode.pin,
             ),
           ),
-          SliverList(
-            delegate: SliverChildListDelegate([
-              const ListTile(title: Text('Appearance')),
-              const ListTile(title: Text('Playback')),
-              const ListTile(title: Text('Audio')),
-            ]),
+          SliverPadding(
+            padding: const EdgeInsets.all(16),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                SettingsContainer(
+                  title: 'Appearance',
+                  subtitle: 'Theme and visual style',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AppearanceSettingsScreen(),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 12),
+                SettingsContainer(
+                  title: 'UI',
+                  subtitle: 'Player interface and controls',
+                  onTap: () {},
+                ),
+                const SizedBox(height: 12),
+                SettingsContainer(
+                  title: 'About',
+                  subtitle: 'App information and licenses',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AboutScreen(),
+                      ),
+                    );
+                  },
+                ),
+              ]),
+            ),
           ),
         ],
       ),
