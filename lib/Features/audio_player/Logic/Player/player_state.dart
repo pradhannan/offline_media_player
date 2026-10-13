@@ -1,5 +1,11 @@
 import 'package:equatable/equatable.dart';
-import '../domain/song_model.dart';
+import '../../domain/song_model.dart';
+
+enum RepeatMode {
+  off,
+  all,
+  one,
+}
 
 abstract class PlayerState extends Equatable {
   const PlayerState();
@@ -15,12 +21,14 @@ class PlayerStatusState extends PlayerState {
   final bool isPlaying;
   final Duration position;
   final Duration duration;
+  final List<SongModel> playlist;
+  final RepeatMode repeatMode;
 
   const PlayerStatusState({
     required this.currentSong,
     required this.isPlaying,
     required this.position,
-    required this.duration,
+    required this.duration, required this.playlist,  this.repeatMode = RepeatMode.off,
   });
 
   @override
@@ -29,5 +37,7 @@ class PlayerStatusState extends PlayerState {
         isPlaying,
         position,
         duration,
+        playlist,
+        repeatMode
       ];
 }

@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../data/audio_repository.dart';
+import '../../data/audio_repository.dart';
 import 'audio_event.dart';
 import 'audio_state.dart';
 

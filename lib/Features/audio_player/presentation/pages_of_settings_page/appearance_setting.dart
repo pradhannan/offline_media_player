@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:media_player_app/Features/Core/color_palettes.dart';
-import 'package:media_player_app/Features/audio_player/Logic/theme_bloc.dart';
-import 'package:media_player_app/Features/audio_player/Logic/theme_event.dart';
-import 'package:media_player_app/Features/audio_player/Logic/theme_state.dart';
+import 'package:media_player_app/Features/audio_player/Logic/Theme/theme_bloc.dart';
+import 'package:media_player_app/Features/audio_player/Logic/Theme/theme_event.dart';
+import 'package:media_player_app/Features/audio_player/Logic/Theme/theme_state.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/setting_pages/color_combination_circles.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/setting_pages/container_settings.dart';
 

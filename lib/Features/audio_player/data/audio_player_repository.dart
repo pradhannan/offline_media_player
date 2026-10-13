@@ -20,5 +20,11 @@ Future<void> playSong(String pathOrUri) async{
 Future<void> pause() async => await _player.pause();
 Future<void> resume() async => await _player.play();
 Future<void> seek(Duration position) async => await _player.seek(position);
+Future<void> setRepeatMode(LoopMode mode) async {
+  await _player.setLoopMode(mode);
+}
 
+Future<void> dispose() async {
+    await _player.dispose();
+  }
 }

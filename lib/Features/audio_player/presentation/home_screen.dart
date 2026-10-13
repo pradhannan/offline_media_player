@@ -1,19 +1,18 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 
 import 'dart:ui';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:media_player_app/Features/audio_player/Logic/audio_bloc.dart';
-import 'package:media_player_app/Features/audio_player/Logic/audio_event.dart';
-import 'package:media_player_app/Features/audio_player/Logic/audio_state.dart';
-import 'package:media_player_app/Features/audio_player/Logic/player_bloc.dart';
-import 'package:media_player_app/Features/audio_player/Logic/player_event.dart';
-import 'package:media_player_app/Features/audio_player/Logic/player_state.dart';
+import 'package:media_player_app/Features/audio_player/Logic/Audio/audio_bloc.dart';
+import 'package:media_player_app/Features/audio_player/Logic/Audio/audio_event.dart';
+import 'package:media_player_app/Features/audio_player/Logic/Audio/audio_state.dart';
+import 'package:media_player_app/Features/audio_player/Logic/Player/player_bloc.dart';
+import 'package:media_player_app/Features/audio_player/Logic/Player/player_event.dart';
+import 'package:media_player_app/Features/audio_player/Logic/Player/player_state.dart';
 import 'package:media_player_app/Features/audio_player/presentation/full_player_screen.dart';
 import 'package:media_player_app/Features/audio_player/presentation/setting_screen.dart';
+import 'package:media_player_app/Features/audio_player/presentation/widgets/animated_equilizer.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/home_screen/folder_section.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/home_screen/mini_player_artwork.dart';
 import 'package:on_audio_query/on_audio_query.dart';
@@ -118,66 +117,102 @@ class HomeScreen extends StatelessWidget {
                       );
                     }
 
-                    return SliverList(
-                      delegate: SliverChildBuilderDelegate((context, index) {
-                        final colors = Theme.of(context).colorScheme;
-                        final song = state.songs[index];
+                    return BlocBuilder<PlayerBloc, PlayerState>(
+                      buildWhen: (previous, current) {
+                        if (previous is PlayerStatusState &&
+                            current is PlayerStatusState) {
+                          return previous.currentSong.id !=
+                              current.currentSong.id;
+                        }
+                        return previous.runtimeType != current.runtimeType;
+                      },
+                      builder: (context, playerState) {
+                        final currentSongId = playerState is PlayerStatusState
+                            ? playerState.currentSong.id
+                            : null;
+                        return SliverList(
+                          delegate: SliverChildBuilderDelegate((
+                            context,
+                            index,
+                          ) {
+                            final colors = Theme.of(context).colorScheme;
+                            final song = state.songs[index];
+                            final isPlaying = song.id == currentSongId;
 
-                        return ListTile(
-                         
-                          
-leading: SizedBox(
-  width: 48,
-  height: 48,
-  child: ClipOval(
-    child: QueryArtworkWidget(
-      id: int.parse(song.id),
-      type: ArtworkType.AUDIO,
-      artworkWidth: 48,
-      artworkHeight: 48,
-      artworkFit: BoxFit.cover,
-      nullArtworkWidget: Container(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: LinearGradient(
-            colors: [
-              colors.primary,
-              colors.secondary,
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-        child: Icon(
-          Icons.album_rounded,
-          color: colors.onPrimary,
-          size: 28,
-        ),
-      ),
-    ),
-  ),
-),
-                          title: Text(
-                            song.title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          subtitle: Text(
-                            song.artist,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.more_vert),
-                            onPressed: () {
-                              // We'll add the menu actions next.
-                            },
-                          ),
-                          onTap: () {
-                            context.read<PlayerBloc>().add(PlaySongEvent(song));
-                          },
+                            return ListTile(
+                              tileColor: isPlaying
+                                  ? colors.primary.withValues(alpha: 0.12)
+                                  : null,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              leading: SizedBox(
+                                width: 48,
+                                height: 48,
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    ClipOval(
+                                      child: QueryArtworkWidget(
+                                        id: int.parse(song.id),
+                                        type: ArtworkType.AUDIO,
+                                        artworkWidth: 48,
+                                        artworkHeight: 48,
+                                        artworkFit: BoxFit.cover,
+                                        nullArtworkWidget: Container(
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            gradient: LinearGradient(
+                                              colors: [
+                                                colors.primary,
+                                                colors.secondary,
+                                              ],
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.bottomRight,
+                                            ),
+                                          ),
+                                          child: Icon(
+                                            Icons.album_rounded,
+                                            color: colors.onPrimary,
+                                            size: 28,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    if (isPlaying)
+                                     const Positioned.fill(
+                                        child: Center(
+                                          child:AnimatedEqualizer(),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                              title: Text(
+                                song.title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              subtitle: Text(
+                                song.artist,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              trailing: IconButton(
+                                icon: const Icon(Icons.more_vert),
+                                onPressed: () {
+                                  // We'll add the menu actions next.
+                                },
+                              ),
+                              onTap: () {
+                                context.read<PlayerBloc>().add(
+                                  PlaySongEvent(song, state.songs),
+                                );
+                              },
+                            );
+                          }, childCount: state.songs.length),
                         );
-                      }, childCount: state.songs.length),
+                      },
                     );
                   }
 
@@ -192,13 +227,13 @@ leading: SizedBox(
             alignment: Alignment.bottomCenter,
             child: BlocBuilder<PlayerBloc, PlayerState>(
               buildWhen: (previous, current) {
-    if (previous is PlayerStatusState &&
-        current is PlayerStatusState) {
-      return previous.currentSong != current.currentSong ||
-          previous.isPlaying != current.isPlaying;
-    }
-    return true;
-  },
+                if (previous is PlayerStatusState &&
+                    current is PlayerStatusState) {
+                  return previous.currentSong != current.currentSong ||
+                      previous.isPlaying != current.isPlaying;
+                }
+                return true;
+              },
               builder: (context, state) {
                 if (state is PlayerStatusState) {
                   final theme = Theme.of(context);
@@ -206,7 +241,6 @@ leading: SizedBox(
                   return SafeArea(
                     child: GestureDetector(
                       onTap: () {
-                        
                         Navigator.push(
                           context,
                           PageRouteBuilder(
@@ -214,7 +248,7 @@ leading: SizedBox(
                               context,
                               animation,
                               secondaryAnimation,
-                            ) =>  FullPlayerScreen(song: state.currentSong),
+                            ) => FullPlayerScreen(song: state.currentSong),
                             transitionsBuilder:
                                 (
                                   context,
@@ -262,11 +296,29 @@ leading: SizedBox(
                                 ),
                                 child: Row(
                                   children: [
-                                    
-Padding(
-  padding: const EdgeInsets.symmetric(horizontal: 12),
-  child: MiniPlayerArtwork(songId: int.parse(state.currentSong.id))
-),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                      ),
+                                     child: SizedBox(
+    width: 48,
+    height: 48,
+    child: Stack(
+      alignment: Alignment.center,
+      children: [
+        MiniPlayerArtwork(
+          songId: int.parse(state.currentSong.id),
+        ),
+        if (state.isPlaying)
+          const Positioned.fill(
+            child: Center(
+              child: AnimatedEqualizer(),
+            ),
+          ),
+      ],
+    ),
+  ),
+                                    ),
                                     Expanded(
                                       child: Column(
                                         mainAxisAlignment:
@@ -310,13 +362,18 @@ Padding(
                                       ),
                                       icon: Icon(
                                         state.isPlaying
-                                            ? Icons.pause_circle_outline_outlined
+                                            ? Icons
+                                                  .pause_circle_outline_outlined
                                             : Icons.play_circle_filled_rounded,
                                         color: colors.primary,
                                       ),
                                     ),
                                     IconButton(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        context.read<PlayerBloc>().add(
+                                          NextSongEvent(),
+                                        );
+                                      },
                                       iconSize: 34,
                                       constraints: const BoxConstraints(
                                         minWidth: 48,

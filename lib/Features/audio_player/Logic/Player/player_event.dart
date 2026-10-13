@@ -13,7 +13,8 @@ abstract class PlayerEvent extends Equatable{
 class PlaySongEvent extends PlayerEvent{
   
  final SongModel song; 
-  const PlaySongEvent(this.song);
+ final List<SongModel> playlist;
+  const PlaySongEvent(this.song, this.playlist);
 
   @override
   List<Object> get props => [song];
@@ -28,3 +29,23 @@ class SeekPositionEvent extends PlayerEvent {
   @override
   List<Object> get props => [position];
 }
+
+
+class NextSongEvent extends PlayerEvent {}
+
+class PreviousSongEvent extends PlayerEvent {}
+
+
+class ReorderQueueEvent extends PlayerEvent {
+  final int oldIndex;
+  final int newIndex;
+
+  const ReorderQueueEvent(this.oldIndex, this.newIndex);
+
+  @override
+  List<Object> get props => [oldIndex, newIndex];
+}
+
+class ToggleRepeatEvent extends PlayerEvent {}
+class HandleSongCompletionEvent extends PlayerEvent {}
+

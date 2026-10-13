@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide RepeatMode;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:media_player_app/Features/audio_player/Logic/player_bloc.dart';
-import 'package:media_player_app/Features/audio_player/Logic/player_event.dart';
-import 'package:media_player_app/Features/audio_player/Logic/player_state.dart';
+import 'package:media_player_app/Features/audio_player/Logic/Player/player_bloc.dart';
+import 'package:media_player_app/Features/audio_player/Logic/Player/player_event.dart';
+import 'package:media_player_app/Features/audio_player/Logic/Player/player_state.dart';
 import 'package:media_player_app/Features/audio_player/domain/song_model.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/full_player_screen/player_artwork.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/full_player_screen/player_primary_controls.dart';
@@ -10,8 +10,9 @@ import 'package:media_player_app/Features/audio_player/presentation/widgets/full
 import 'package:media_player_app/Features/audio_player/presentation/widgets/full_player_screen/player_secondary_control.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/full_player_screen/player_top_bar.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/full_player_screen/progress_bar_style.dart';
+import 'package:media_player_app/Features/audio_player/presentation/widgets/full_player_screen/queue_bottom_sheet.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/full_player_screen/song_info.dart';
-
+import 'package:media_player_app/Features/audio_player/Logic/Player/player_state.dart';
 class FullPlayerScreen extends StatelessWidget {
   final SongModel song;
   const FullPlayerScreen({super.key, required this.song});
@@ -35,61 +36,107 @@ class FullPlayerScreen extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 16, bottom: 0),
                   child: Align(
                     alignment: Alignment.topCenter,
-                    child: PlayerArtwork( onTap: () {},  songId: int.parse(song.id),),
+                    child: BlocBuilder<PlayerBloc,PlayerState>(
+                      builder: (context,state) {
+                         final currentSong = state is PlayerStatusState
+        ? state.currentSong
+        
+        : song;
+        debugPrint('Full player song: ${currentSong.title}');
+                        return PlayerArtwork(
+                          
+                          
+                          onTap: () {},
+                          key: ValueKey(currentSong.id),  //tells Flutter that each song has a different artwork widget
+                          songId: int.parse(currentSong.id),
+                        );
+                      }
+                    ),
                   ),
                 ),
               ),
 
               //info
-              Align(
-                alignment: Alignment.centerLeft,
-                child: SongInfo(title: song.title, artist: song.artist, onTap: () {}),
+             BlocBuilder<PlayerBloc, PlayerState>(
+                builder: (context,state) {
+                  final currentSong = state is PlayerStatusState
+        ? state.currentSong
+        : song;
+
+                  return Align(
+                    alignment: Alignment.centerLeft,
+                    child: SongInfo(
+                      title: currentSong.title,
+                      artist: currentSong.artist,
+                      onTap: () {},
+                    ),
+                  );
+                }
               ),
 
               //progress
-             
-BlocBuilder<PlayerBloc, PlayerState>(
-  builder: (context, state) {
-    final isReady = state is PlayerStatusState;
+              BlocBuilder<PlayerBloc, PlayerState>(
+                builder: (context, state) {
+                  final isReady = state is PlayerStatusState;
 
-    return PlayerProgressSection(
-      position: isReady ? state.position : Duration.zero,
-      duration: isReady ? state.duration : Duration.zero,
-      style: ProgressBarStyle.linear,
-      onSeek: (newPosition) {
-        context.read<PlayerBloc>().add(
-          SeekPositionEvent(newPosition),
-        );
-      },
-    );
-  },
-),
+                  return PlayerProgressSection(
+                    position: isReady ? state.position : Duration.zero,
+                    duration: isReady ? state.duration : Duration.zero,
+                    style: ProgressBarStyle.linear,
+                    onSeek: (newPosition) {
+                      context.read<PlayerBloc>().add(
+                        SeekPositionEvent(newPosition),
+                      );
+                    },
+                  );
+                },
+              ),
               //primary control
               BlocBuilder<PlayerBloc, PlayerState>(
+                builder: (context, state) {
+                  return PlayerPrimaryControls(
+                    isPlaying: state is PlayerStatusState && state.isPlaying,
+                    onPlayPause: () {
+                      context.read<PlayerBloc>().add(TogglePlayPauseEvent());
+                    },
+                    onPrevious: () {
+                      context.read<PlayerBloc>().add(PreviousSongEvent());
+                    },
+                    onNext: () {
+                      context.read<PlayerBloc>().add(NextSongEvent());
+                    },
+                  );
+                },
+              ),
+              //secondary control
+             // Secondary controls
+BlocBuilder<PlayerBloc, PlayerState>(
   builder: (context, state) {
-    return PlayerPrimaryControls(
-      isPlaying:
-          state is PlayerStatusState && state.isPlaying,
-      onPlayPause: () {
-        context.read<PlayerBloc>().add(
-          TogglePlayPauseEvent(),
-        );
+    final repeatMode = state is PlayerStatusState
+        ? state.repeatMode
+        : RepeatMode.off;
+
+    return PlayerSecondaryControls(
+      isFavorite: false,
+      isShuffle: false,
+      repeatMode: repeatMode,
+      onFavoriteToggle: () {},
+      onShuffleToggle: () {},
+      onRepeatToggle: () {
+        context.read<PlayerBloc>().add(ToggleRepeatEvent());
       },
-      onPrevious: () {},
-      onNext: () {},
+      onQueueTap: () {
+        showModalBottomSheet(
+          context: context,
+          useSafeArea: true,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (context) => const QueueBottomSheet(),
+        );
+      }, 
     );
   },
 ),
-              //secondary control
-              PlayerSecondaryControls(
-                isFavorite: false,
-                isShuffle: false,
-                isRepeat: false,
-                onFavoriteToggle: () {},
-                onShuffleToggle: () {},
-                onRepeatToggle: () {},
-                onQueueTap: () {},
-              ),
             ],
           ),
         ),
