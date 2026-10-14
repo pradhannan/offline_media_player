@@ -48,4 +48,5 @@ class ReorderQueueEvent extends PlayerEvent {
 
 class ToggleRepeatEvent extends PlayerEvent {}
 class HandleSongCompletionEvent extends PlayerEvent {}
+class ToggleShuffleEvent extends PlayerEvent {}
 

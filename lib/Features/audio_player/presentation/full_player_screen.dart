@@ -115,13 +115,19 @@ BlocBuilder<PlayerBloc, PlayerState>(
     final repeatMode = state is PlayerStatusState
         ? state.repeatMode
         : RepeatMode.off;
+        final isShuffle = state is PlayerStatusState
+    ? state.isShuffle
+    : false;
 
     return PlayerSecondaryControls(
       isFavorite: false,
-      isShuffle: false,
+      isShuffle: isShuffle,
+onShuffleToggle: () {
+  context.read<PlayerBloc>().add(ToggleShuffleEvent());
+},
       repeatMode: repeatMode,
       onFavoriteToggle: () {},
-      onShuffleToggle: () {},
+      
       onRepeatToggle: () {
         context.read<PlayerBloc>().add(ToggleRepeatEvent());
       },

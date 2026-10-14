@@ -23,12 +23,14 @@ class PlayerStatusState extends PlayerState {
   final Duration duration;
   final List<SongModel> playlist;
   final RepeatMode repeatMode;
+  final bool isShuffle;
 
   const PlayerStatusState({
     required this.currentSong,
     required this.isPlaying,
     required this.position,
     required this.duration, required this.playlist,  this.repeatMode = RepeatMode.off,
+    this.isShuffle = false,
   });
 
   @override
@@ -38,6 +40,7 @@ class PlayerStatusState extends PlayerState {
         position,
         duration,
         playlist,
+        isShuffle,
         repeatMode
       ];
 }

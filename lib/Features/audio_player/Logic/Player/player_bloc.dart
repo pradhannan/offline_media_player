@@ -18,6 +18,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
 
   SongModel? _currentSong;
   List<SongModel> _playlist = [];
+  List<SongModel> _originalPlaylist = [];
   int _currentIndex = -1;
   bool _isPlaying = false;
   Duration _position = Duration.zero;
@@ -25,6 +26,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   RepeatMode _repeatMode = RepeatMode.off;
   bool _repeatCurrentOnce = false;
    bool _completionQueued = false;
+   bool _isShuffle = false;
 
   PlayerBloc({required this.audioPlayerRepository})
     : super(PlayerInitialState()) {
@@ -38,9 +40,10 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     //Queue
     on<ReorderQueueEvent>(_onReorderQueue);
 
-    //Repeat
+    //Repeat&shuffle
     on<ToggleRepeatEvent>(_onToggleRepeat);
     on<HandleSongCompletionEvent>(_onSongCompleted);
+    on<ToggleShuffleEvent>(_onToggleShuffle);
 
     _listenToPlayerStreams();
   }
@@ -83,6 +86,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
           duration: _duration,
           playlist: List.unmodifiable(_playlist),
           repeatMode: _repeatMode,
+          isShuffle: _isShuffle,
           //show queue without modifying the real list
         ),
       );
@@ -94,6 +98,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     Emitter<PlayerState> emit,
   ) async {
     _playlist = event.playlist;
+    _originalPlaylist = List.from(_playlist);
     _currentIndex = _playlist.indexWhere(
       (song) => song.id == event.song.id,
     ); //song id in the list is equal to song id user clicked
@@ -188,13 +193,31 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
 
     _emitCurrentStatus(); // publishes the updated queue through PlayerStatusState.
   }
+void _onToggleShuffle(
+  ToggleShuffleEvent event,
+  Emitter<PlayerState> emit,
+) {
+  _isShuffle = !_isShuffle; //T becomes F and vice versa
 
+if (_isShuffle) {
+  _playlist.shuffle(); //randomize
+} else {
+  _playlist = List.from(_originalPlaylist); //creates a separate list with the same song order.
+}
+
+_currentIndex = _playlist.indexWhere(
+  (song) => song.id == _currentSong?.id,
+);
+
+_emitCurrentStatus();
+}
   void _onToggleRepeat(ToggleRepeatEvent event, Emitter<PlayerState> emit) {
     _repeatMode = switch (_repeatMode) {
       RepeatMode.off => RepeatMode.all,
       RepeatMode.all => RepeatMode.one,
       RepeatMode.one => RepeatMode.off,
     };
+
 
     _repeatCurrentOnce = false;
 
@@ -221,7 +244,10 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
       await _playSongAtIndex(_currentIndex + 1);
     } else if (_repeatMode == RepeatMode.all) {
       await _playSongAtIndex(0);
-    }
+    }else {
+  _isPlaying = false;
+  _emitCurrentStatus();
+}
   }
 
   @override

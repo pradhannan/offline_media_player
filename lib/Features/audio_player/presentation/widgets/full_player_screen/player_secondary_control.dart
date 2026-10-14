@@ -70,7 +70,7 @@ IconButton(
         IconButton(
             iconSize: 26,
           icon: const Icon(Icons.shuffle_rounded),
-          color: isShuffle ? colors.primary : colors.onSurfaceVariant,
+          color: isShuffle ? colors.outline : colors.primary,
           onPressed: onShuffleToggle,
         ),
       ],

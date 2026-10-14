@@ -10,6 +10,9 @@ import 'package:media_player_app/Features/audio_player/Logic/Audio/audio_state.d
 import 'package:media_player_app/Features/audio_player/Logic/Player/player_bloc.dart';
 import 'package:media_player_app/Features/audio_player/Logic/Player/player_event.dart';
 import 'package:media_player_app/Features/audio_player/Logic/Player/player_state.dart';
+import 'package:media_player_app/Features/audio_player/Logic/Search/search_bloc.dart';
+import 'package:media_player_app/Features/audio_player/Logic/Search/search_event.dart';
+import 'package:media_player_app/Features/audio_player/presentation/search_screen.dart';
 import 'package:media_player_app/Features/audio_player/presentation/full_player_screen.dart';
 import 'package:media_player_app/Features/audio_player/presentation/setting_screen.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/animated_equilizer.dart';
@@ -31,13 +34,13 @@ class HomeScreen extends StatelessWidget {
                 pinned: true,
                 expandedHeight: 160,
                 collapsedHeight: 78,
-
+          
                 backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 surfaceTintColor: Colors.transparent,
                 forceMaterialTransparency: false,
                 flexibleSpace: FlexibleSpaceBar(
                   expandedTitleScale: 1.8,
-
+          
                   title: Text(
                     'S U R   T A A L',
                     style: GoogleFonts.poppins(
@@ -51,11 +54,25 @@ class HomeScreen extends StatelessWidget {
                 ),
                 actions: [
                   IconButton(
-                    onPressed: () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(builder: (context) => SettingScreen()),
-                      // );
+                   
+                     onPressed: () {
+            final audioState = context.read<AudioBloc>().state;
+          
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => BlocProvider(
+                  create: (_) => SearchBloc()
+                    ..add(
+          SearchSongsLoadedEvent(
+            audioState is AudioLoaded ? audioState.songs : [],  // If audioState is AudioLoaded, pass its song list. Otherwise, pass an empty list.
+          ),
+                    ),
+                  child: const SearchScreen(),
+                ),
+              ),
+            );
+          
                     },
                     icon: Icon(
                       Icons.search_rounded,
@@ -116,7 +133,7 @@ class HomeScreen extends StatelessWidget {
                         child: Center(child: Text('No songs found on device.')),
                       );
                     }
-
+          
                     return BlocBuilder<PlayerBloc, PlayerState>(
                       buildWhen: (previous, current) {
                         if (previous is PlayerStatusState &&
@@ -138,7 +155,7 @@ class HomeScreen extends StatelessWidget {
                             final colors = Theme.of(context).colorScheme;
                             final song = state.songs[index];
                             final isPlaying = song.id == currentSongId;
-
+          
                             return ListTile(
                               tileColor: isPlaying
                                   ? colors.primary.withValues(alpha: 0.12)
@@ -211,16 +228,20 @@ class HomeScreen extends StatelessWidget {
                               },
                             );
                           }, childCount: state.songs.length),
+                          
                         );
                       },
                     );
                   }
-
+          
                   return const SliverToBoxAdapter(
                     child: Center(child: Text('Press fetch to load songs.')),
                   );
                 },
               ),
+              const SliverToBoxAdapter(
+  child: SizedBox(height: 90),
+),
             ],
           ),
           Align(
