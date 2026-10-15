@@ -9,7 +9,6 @@ import 'package:media_player_app/Features/audio_player/Logic/Theme/theme_state.d
 import 'package:media_player_app/Features/audio_player/data/audio_player_repository.dart';
 import 'package:media_player_app/Features/audio_player/data/audio_repository.dart';
 import 'package:media_player_app/Features/audio_player/presentation/home_screen.dart';
-import 'package:media_player_app/Features/audio_player/presentation/setting_screen.dart';
 
 
 import 'Features/Core/app_theme.dart';

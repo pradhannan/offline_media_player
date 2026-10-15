@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class SongInfo extends StatelessWidget {
+class Songtitlealbum extends StatelessWidget {
   final String title;
   final String artist;
   final VoidCallback onTap;
-  const SongInfo({super.key, required this.title, required this.artist, required this.onTap});
+  const Songtitlealbum({super.key, required this.title, required this.artist, required this.onTap});
 
   @override
   Widget build(BuildContext context) {

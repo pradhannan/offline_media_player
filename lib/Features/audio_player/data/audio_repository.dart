@@ -46,6 +46,7 @@ class AudioRepository {
     album: song.album ?? 'Unknown Album',
     uri: song.data, // 'data' holds the file path on device
     duration: song.duration ?? 0,
+   
   );
 }).toList();
   }

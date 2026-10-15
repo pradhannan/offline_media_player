@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart' hide RepeatMode;
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:media_player_app/Features/audio_player/Logic/Audio/audio_bloc.dart';
+import 'package:media_player_app/Features/audio_player/Logic/Audio/audio_state.dart';
 import 'package:media_player_app/Features/audio_player/Logic/Player/player_bloc.dart';
 import 'package:media_player_app/Features/audio_player/Logic/Player/player_event.dart';
 import 'package:media_player_app/Features/audio_player/Logic/Player/player_state.dart';
 import 'package:media_player_app/Features/audio_player/domain/song_model.dart';
+import 'package:media_player_app/Features/audio_player/presentation/artists_page.dart';
+import 'package:media_player_app/Features/audio_player/presentation/song_info.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/full_player_screen/player_artwork.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/full_player_screen/player_primary_controls.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/full_player_screen/player_progress_bar.dart';
@@ -12,7 +16,6 @@ import 'package:media_player_app/Features/audio_player/presentation/widgets/full
 import 'package:media_player_app/Features/audio_player/presentation/widgets/full_player_screen/progress_bar_style.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/full_player_screen/queue_bottom_sheet.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/full_player_screen/song_info.dart';
-import 'package:media_player_app/Features/audio_player/Logic/Player/player_state.dart';
 class FullPlayerScreen extends StatelessWidget {
   final SongModel song;
   const FullPlayerScreen({super.key, required this.song});
@@ -43,12 +46,23 @@ class FullPlayerScreen extends StatelessWidget {
         
         : song;
         debugPrint('Full player song: ${currentSong.title}');
-                        return PlayerArtwork(
-                          
-                          
-                          onTap: () {},
-                          key: ValueKey(currentSong.id),  //tells Flutter that each song has a different artwork widget
-                          songId: int.parse(currentSong.id),
+                        return GestureDetector(
+                          onTap: () {
+                         
+                          Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>  SongInfo(song: currentSong,),
+                      ),
+                    );
+                          },
+                          child: PlayerArtwork(
+                            
+                            
+                            
+                            key: ValueKey(currentSong.id),  //tells Flutter that each song has a different artwork widget
+                            songId: int.parse(currentSong.id),
+                          ),
                         );
                       }
                     ),
@@ -65,10 +79,28 @@ class FullPlayerScreen extends StatelessWidget {
 
                   return Align(
                     alignment: Alignment.centerLeft,
-                    child: SongInfo(
+                    child: Songtitlealbum(
                       title: currentSong.title,
                       artist: currentSong.artist,
-                      onTap: () {},
+                     onTap: () {
+  final allSongs = context.read<AudioBloc>().state;
+
+  if (allSongs is AudioLoaded) {
+    final artistSongs = allSongs.songs
+        .where((song) => song.artist == currentSong.artist)
+        .toList();
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ArtistsPage(
+          artist: currentSong.artist,
+          songs: artistSongs,
+        ),
+      ),
+    );
+  }
+},
                     ),
                   );
                 }

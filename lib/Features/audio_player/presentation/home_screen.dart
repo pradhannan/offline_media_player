@@ -18,6 +18,7 @@ import 'package:media_player_app/Features/audio_player/presentation/setting_scre
 import 'package:media_player_app/Features/audio_player/presentation/widgets/animated_equilizer.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/home_screen/folder_section.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/home_screen/mini_player_artwork.dart';
+import 'package:media_player_app/Features/audio_player/presentation/widgets/mini_player.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -34,13 +35,13 @@ class HomeScreen extends StatelessWidget {
                 pinned: true,
                 expandedHeight: 160,
                 collapsedHeight: 78,
-          
+
                 backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 surfaceTintColor: Colors.transparent,
                 forceMaterialTransparency: false,
                 flexibleSpace: FlexibleSpaceBar(
                   expandedTitleScale: 1.8,
-          
+
                   title: Text(
                     'S U R   T A A L',
                     style: GoogleFonts.poppins(
@@ -54,25 +55,25 @@ class HomeScreen extends StatelessWidget {
                 ),
                 actions: [
                   IconButton(
-                   
-                     onPressed: () {
-            final audioState = context.read<AudioBloc>().state;
-          
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => BlocProvider(
-                  create: (_) => SearchBloc()
-                    ..add(
-          SearchSongsLoadedEvent(
-            audioState is AudioLoaded ? audioState.songs : [],  // If audioState is AudioLoaded, pass its song list. Otherwise, pass an empty list.
-          ),
-                    ),
-                  child: const SearchScreen(),
-                ),
-              ),
-            );
-          
+                    onPressed: () {
+                      final audioState = context.read<AudioBloc>().state;
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => BlocProvider(
+                            create: (_) => SearchBloc()
+                              ..add(
+                                SearchSongsLoadedEvent(
+                                  audioState is AudioLoaded
+                                      ? audioState.songs
+                                      : [], // If audioState is AudioLoaded, pass its song list. Otherwise, pass an empty list.
+                                ),
+                              ),
+                            child: const SearchScreen(),
+                          ),
+                        ),
+                      );
                     },
                     icon: Icon(
                       Icons.search_rounded,
@@ -97,7 +98,6 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              const SliverToBoxAdapter(child: FolderSection()),
               BlocBuilder<AudioBloc, AudioState>(
                 builder: (context, state) {
                   if (state is AudioLoading) {
@@ -133,7 +133,7 @@ class HomeScreen extends StatelessWidget {
                         child: Center(child: Text('No songs found on device.')),
                       );
                     }
-          
+
                     return BlocBuilder<PlayerBloc, PlayerState>(
                       buildWhen: (previous, current) {
                         if (previous is PlayerStatusState &&
@@ -155,7 +155,7 @@ class HomeScreen extends StatelessWidget {
                             final colors = Theme.of(context).colorScheme;
                             final song = state.songs[index];
                             final isPlaying = song.id == currentSongId;
-          
+
                             return ListTile(
                               tileColor: isPlaying
                                   ? colors.primary.withValues(alpha: 0.12)
@@ -196,12 +196,8 @@ class HomeScreen extends StatelessWidget {
                                         ),
                                       ),
                                     ),
-                                    if (isPlaying)
-                                     const Positioned.fill(
-                                        child: Center(
-                                          child:AnimatedEqualizer(),
-                                        ),
-                                      ),
+                                    
+                                    
                                   ],
                                 ),
                               ),
@@ -222,202 +218,39 @@ class HomeScreen extends StatelessWidget {
                                 },
                               ),
                               onTap: () {
-                                context.read<PlayerBloc>().add(
-                                  PlaySongEvent(song, state.songs),
-                                );
+                                final playerState = context
+                                    .read<PlayerBloc>()
+                                    .state;
+
+                                if (playerState is PlayerStatusState &&
+                                    song.id == playerState.currentSong.id) {
+                                  context.read<PlayerBloc>().add(
+                                    TogglePlayPauseEvent(),
+                                  );
+                                } else {
+                                  context.read<PlayerBloc>().add(
+                                    PlaySongEvent(song, state.songs),
+                                  );
+                                }
                               },
                             );
                           }, childCount: state.songs.length),
-                          
                         );
                       },
                     );
                   }
-          
+
                   return const SliverToBoxAdapter(
                     child: Center(child: Text('Press fetch to load songs.')),
                   );
                 },
               ),
-              const SliverToBoxAdapter(
-  child: SizedBox(height: 90),
-),
+              const SliverToBoxAdapter(child: SizedBox(height: 90)),
             ],
           ),
           Align(
             alignment: Alignment.bottomCenter,
-            child: BlocBuilder<PlayerBloc, PlayerState>(
-              buildWhen: (previous, current) {
-                if (previous is PlayerStatusState &&
-                    current is PlayerStatusState) {
-                  return previous.currentSong != current.currentSong ||
-                      previous.isPlaying != current.isPlaying;
-                }
-                return true;
-              },
-              builder: (context, state) {
-                if (state is PlayerStatusState) {
-                  final theme = Theme.of(context);
-                  final colors = theme.colorScheme;
-                  return SafeArea(
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          PageRouteBuilder(
-                            pageBuilder: (
-                              context,
-                              animation,
-                              secondaryAnimation,
-                            ) => FullPlayerScreen(song: state.currentSong),
-                            transitionsBuilder:
-                                (
-                                  context,
-                                  animation,
-                                  secondaryAnimation,
-                                  child,
-                                ) {
-                                  const begin = Offset(
-                                    0.0,
-                                    1.0,
-                                  ); // Start from bottom
-                                  const end = Offset.zero;
-                                  const curve = Curves.easeInOut;
-
-                                  var tween = Tween(
-                                    begin: begin,
-                                    end: end,
-                                  ).chain(CurveTween(curve: curve));
-
-                                  return SlideTransition(
-                                    position: animation.drive(tween),
-                                    child: child,
-                                  );
-                                },
-                          ),
-                        );
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(24),
-                          child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                            child: Material(
-                              color: Colors.transparent,
-                              elevation: 6,
-                              shadowColor: Colors.black.withValues(alpha: 0.18),
-                              borderRadius: BorderRadius.circular(24),
-                              child: Container(
-                                height: 70,
-                                decoration: BoxDecoration(
-                                  color: colors.surface.withValues(alpha: 0.25),
-                                  borderRadius: BorderRadius.circular(24),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 12,
-                                      ),
-                                     child: SizedBox(
-    width: 48,
-    height: 48,
-    child: Stack(
-      alignment: Alignment.center,
-      children: [
-        MiniPlayerArtwork(
-          songId: int.parse(state.currentSong.id),
-        ),
-        if (state.isPlaying)
-          const Positioned.fill(
-            child: Center(
-              child: AnimatedEqualizer(),
-            ),
-          ),
-      ],
-    ),
-  ),
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            state.currentSong.title,
-                                            style: theme.textTheme.bodyMedium
-                                                ?.copyWith(
-                                                  color: colors.onSurface,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          Text(
-                                            state.currentSong.artist,
-                                            style: theme.textTheme.bodySmall
-                                                ?.copyWith(
-                                                  color: colors.onSurface,
-                                                ),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-
-                                    IconButton(
-                                      onPressed: () {
-                                        context.read<PlayerBloc>().add(
-                                          TogglePlayPauseEvent(),
-                                        );
-                                      },
-                                      iconSize: 34,
-                                      constraints: const BoxConstraints(
-                                        minWidth: 48,
-                                        minHeight: 48,
-                                      ),
-                                      icon: Icon(
-                                        state.isPlaying
-                                            ? Icons
-                                                  .pause_circle_outline_outlined
-                                            : Icons.play_circle_filled_rounded,
-                                        color: colors.primary,
-                                      ),
-                                    ),
-                                    IconButton(
-                                      onPressed: () {
-                                        context.read<PlayerBloc>().add(
-                                          NextSongEvent(),
-                                        );
-                                      },
-                                      iconSize: 34,
-                                      constraints: const BoxConstraints(
-                                        minWidth: 48,
-                                        minHeight: 48,
-                                      ),
-                                      icon: Icon(
-                                        Icons.skip_next_rounded,
-                                        color: colors.primary,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                }
-                return const SizedBox.shrink();
-              },
-            ),
+            child: MiniPlayer(),
           ),
         ],
       ),

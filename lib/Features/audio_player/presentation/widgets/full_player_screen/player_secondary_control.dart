@@ -24,6 +24,7 @@ class PlayerSecondaryControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    // ignore: unused_local_variable
     final isRepeatEnabled = repeatMode != RepeatMode.off;
 
     return Row(

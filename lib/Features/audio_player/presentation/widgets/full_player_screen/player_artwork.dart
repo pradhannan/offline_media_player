@@ -4,18 +4,19 @@ import 'package:on_audio_query/on_audio_query.dart';
 class PlayerArtwork extends StatelessWidget {
   final int songId;
   final String? imageUrl;
-  final VoidCallback onTap;
-  const PlayerArtwork({super.key, required this.onTap, this.imageUrl, required this.songId,});
+
+  const PlayerArtwork({
+    super.key,
+   
+    this.imageUrl,
+    required this.songId,
+  });
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return GestureDetector(
-      onTap: () {
-        
-      },
-      
-      child: FittedBox(fit: BoxFit.contain,
+    return FittedBox(
+      fit: BoxFit.contain,
       child: SizedBox(
         height: 325,
         width: 325,
@@ -26,23 +27,21 @@ class PlayerArtwork extends StatelessWidget {
             child: Container(
               color: colors.surfaceContainerHighest,
               child: QueryArtworkWidget(
-              id: songId,
-              type: ArtworkType.AUDIO,
-                 quality: 100,
-  size: 600,
-  artworkWidth: 325,
-  artworkHeight: 325,
-  artworkQuality: FilterQuality.high,
-              keepOldArtwork: true,
-              nullArtworkWidget: _buildPlaceholder(colors),
+                id: songId,
+                type: ArtworkType.AUDIO,
+                quality: 100,
+                size: 600,
+                artworkWidth: 325,
+                artworkHeight: 325,
+                artworkQuality: FilterQuality.high,
+                keepOldArtwork: true,
+                nullArtworkWidget: _buildPlaceholder(colors),
+              ),
             ),
-        
           ),
         ),
-      ),)),
+      ),
     );
-
-
   }
 
   Widget _buildPlaceholder(ColorScheme colors) {

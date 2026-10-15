@@ -4,6 +4,7 @@ import 'package:media_player_app/Features/Core/color_palettes.dart';
 import 'package:media_player_app/Features/audio_player/Logic/Theme/theme_bloc.dart';
 import 'package:media_player_app/Features/audio_player/Logic/Theme/theme_event.dart';
 import 'package:media_player_app/Features/audio_player/Logic/Theme/theme_state.dart';
+import 'package:media_player_app/Features/audio_player/presentation/widgets/collapsing_title.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/setting_pages/color_combination_circles.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/setting_pages/container_settings.dart';
 
@@ -18,13 +19,17 @@ class AppearanceSettingsScreen extends StatelessWidget {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
+
+           titleSpacing: 0,
             pinned: true,
-            title: const Text('Appearance'),
-            centerTitle: false,
+            expandedHeight: 160,
+            collapsedHeight: 64,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () => Navigator.pop(context),
             ),
+            flexibleSpace: CollapsingTitle(title: "Appearance"),
+            
           ),
 
           SliverToBoxAdapter(
@@ -37,7 +42,7 @@ class AppearanceSettingsScreen extends StatelessWidget {
                   BlocBuilder<ThemeBloc, ThemeState>(
                     builder: (context, state) {
                       return SettingsContainer(
-                        title: 'Theme',
+                        title: 'Dark Theme',
                         subtitle: 'Choose how the app looks',
                         switchValue: state.themeMode == ThemeMode.dark,
                         onSwitchChanged: (value) {

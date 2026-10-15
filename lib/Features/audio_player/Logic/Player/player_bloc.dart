@@ -78,6 +78,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
 
   void _emitCurrentStatus() {
     if (_currentSong != null) {
+      // ignore: invalid_use_of_visible_for_testing_member
       emit(
         PlayerStatusState(
           currentSong: _currentSong!,

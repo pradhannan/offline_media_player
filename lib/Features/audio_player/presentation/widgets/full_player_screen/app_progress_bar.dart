@@ -34,6 +34,7 @@ class AppProgressBar extends StatelessWidget {
         return _buildLinearBar(context, currentPosition, maxDuration);
 
       case ProgressBarStyle.linear:
+      // ignore: unreachable_switch_default
       default:
         return _buildLinearBar(context, currentPosition, maxDuration);
     }
