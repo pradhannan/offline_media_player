@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:media_player_app/Features/Core/color_palettes.dart';
 import 'package:media_player_app/Features/audio_player/Logic/Audio/audio_bloc.dart';
 import 'package:media_player_app/Features/audio_player/Logic/Audio/audio_event.dart';
+import 'package:media_player_app/Features/audio_player/Logic/Library/library_bloc.dart';
 import 'package:media_player_app/Features/audio_player/Logic/Player/player_bloc.dart';
 import 'package:media_player_app/Features/audio_player/Logic/Theme/theme_bloc.dart';
 import 'package:media_player_app/Features/audio_player/Logic/Theme/theme_state.dart';
@@ -48,6 +49,10 @@ class MyApp extends StatelessWidget {
           create: (context) =>
               PlayerBloc(audioPlayerRepository: audioPlayerRepository),
         ),
+        BlocProvider<LibraryBloc>(
+  // Creates LibraryBloc and makes it available to HomeScreen.
+  create: (context) => LibraryBloc(),
+),
         BlocProvider<ThemeBloc>(
   create: (context) => ThemeBloc(), // CHANGED
 ),

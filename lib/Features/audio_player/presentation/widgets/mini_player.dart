@@ -82,6 +82,9 @@ class MiniPlayer extends StatelessWidget {
                                 decoration: BoxDecoration(
                                   color: colors.surface.withValues(alpha: 0.25),
                                   borderRadius: BorderRadius.circular(24),
+                                  border: Border.all(
+          color: colors.outline,
+        ),
                                 ),
                                 child: Row(
                                   children: [
