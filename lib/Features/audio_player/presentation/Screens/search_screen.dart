@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 
 import 'package:media_player_app/Features/audio_player/Logic/Player/player_state.dart';
-import 'package:media_player_app/Features/audio_player/presentation/album_page.dart';
-import 'package:media_player_app/Features/audio_player/presentation/artists_page.dart';
+import 'package:media_player_app/Features/audio_player/presentation/Screens/album_page.dart';
+import 'package:media_player_app/Features/audio_player/presentation/Screens/artists_page.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/animated_equilizer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:media_player_app/Features/audio_player/Logic/Search/search_bloc.dart';
@@ -226,9 +226,14 @@ class _SearchScreenState extends State<SearchScreen> {
                             playerState.isPlaying;
 
                         return ListTile(
+                          tileColor: isPlaying
+                                ? Theme.of(context).colorScheme.primary
+                                      .withValues(alpha: 0.12)
+                                : Colors.transparent,
                           leading: SizedBox(
                             width: 50,
                             height: 50,
+                            
                             child: Stack(
                               alignment: Alignment.center,
                               children: [
@@ -237,6 +242,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                   type: ArtworkType.AUDIO,
                                   artworkWidth: 50,
                                   artworkHeight: 50,
+                                   quality: 100,
+                                  size: 1000,
                                   keepOldArtwork: true,
                                   artworkFit: BoxFit.cover,
                                   nullArtworkWidget: Container(

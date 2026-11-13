@@ -37,21 +37,37 @@ class AudioRepository {
       uriType: audio_query.UriType.EXTERNAL,
       ignoreCase: true,
     );
+    final rawArtists = await _audioQuery.queryArtists();
+//    final rawGenres = await _audioQuery.queryGenres();
+//     debugPrint('Available genres: $rawGenres');
+//     for (final genre in rawGenres) {
+//   debugPrint(
+//     'Genre: ${genre.genre}, ID: ${genre.id}, Songs: ${genre.numOfSongs}',
+//   );
+// }
+    final artistIds = {
+  for (final artist in rawArtists)
+    artist.artist: artist.id.toString(),
+};
 
     return  rawSongs.map((song) {
+  //    debugPrint(
+  // 'Song: ${song.title}, Genre: ${song.genre}');
   return SongModel(
+   artistId: artistIds[song.artist],
     id: song.id.toString(),
     title: song.title,
     artist: song.artist ?? 'Unknown Artist',
     album: song.album ?? 'Unknown Album',
     uri: song.data, // 'data' holds the file path on device
     duration: song.duration ?? 0,
+    genre: song.genre,
    
   );
 }).toList();
   }
 
-  // 3. Web picker stub
+  // 3. Web picker ..
   Future<List<SongModel>> pickSongsFromWeb() async {
   final result = await FilePicker.pickFiles(
     type: FileType.audio,
@@ -64,9 +80,9 @@ class AudioRepository {
     return [];
   }
 
-  // We will map the picked files next!
   return  result.map((file) {
   return SongModel(
+    artistId: null,
     id: file.name, // Uses file name as a unique identifier on Web
     title: file.name.replaceAll(RegExp(r'\.[^.]+$'), ''), // Removes extension like .mp3
     artist: 'Web Track',

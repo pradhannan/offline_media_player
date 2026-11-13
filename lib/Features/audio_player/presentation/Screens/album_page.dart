@@ -55,12 +55,13 @@ class AlbumPage extends StatelessWidget {
           (context, index) {
             final song = songs[index];
           
-            return SongTile(song: song);
+            return SongTile(song: song, playlist: songs,);
           },
           childCount: songs.length,
               ),
             ),
           ),
+          const SliverToBoxAdapter(child: SizedBox(height: 90)),
           
           
             ],

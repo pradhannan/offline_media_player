@@ -25,12 +25,24 @@ class QueueBottomSheet extends StatelessWidget {
           ),
           child: BlocBuilder<PlayerBloc, PlayerState>(
             builder: (context, state) {
-              if (state is! PlayerStatusState) {
+              if (state is! PlayerStatusState &&
+                  state is! PlayerQueueStoppedState) {
                 return ListView(
                   controller: scrollController,
-                  children: const [Center(child: Text('No songs in queue'))],
+                  children: const [
+                    Center(child: Text('No songs in queue')),
+                  ],
                 );
               }
+              // Get playlist from either state
+              final playlist = state is PlayerStatusState
+                  ? state.playlist
+                  : (state as PlayerQueueStoppedState).playlist;
+
+              //  There may be no current song when playback is stopped
+              final currentSong = state is PlayerStatusState
+                  ? state.currentSong
+                  : null;
               return Column(
                 children: [
                   Padding(
@@ -52,7 +64,7 @@ class QueueBottomSheet extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(height: 4),
-                              Text('${state.playlist.length} songs'),
+                              Text('${playlist.length} songs'),
                             ],
                           ),
                         ),
@@ -76,90 +88,122 @@ class QueueBottomSheet extends StatelessWidget {
                     child: ReorderableListView.builder(
                       scrollController: scrollController,
                       onReorderItem: (oldIndex, newIndex) {
-                        debugPrint('Moving from $oldIndex to $newIndex');
+                        // debugPrint('Moving from $oldIndex to $newIndex');
                         context.read<PlayerBloc>().add(
                           ReorderQueueEvent(oldIndex, newIndex),
                         );
                       },
 
-                      itemCount: state.playlist.length,
+                      itemCount: playlist.length,
                       itemBuilder: (context, index) {
-                        final song = state.playlist[index];
-                        final isPlaying = song.id == state.currentSong.id;
+                        final song = playlist[index];
+                        final isPlaying =
+    state is PlayerStatusState &&
+    state.currentSong.id == song.id &&
+    state.isPlaying;
 
-                        return Material(
-                          key: ValueKey(song.id),
-                          color: isPlaying
-                              ? Theme.of(context).colorScheme.primary
-                                    .withValues(alpha: 0.12)
-                              : Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 12,
+                        return Dismissible(
+
+                          //...
+                          key: ValueKey('${song.id}_$index'),
+                          direction: DismissDirection.endToStart,
+                          background: Container(
+                            alignment: Alignment.centerRight,
+                            padding: const EdgeInsets.only(right: 24),
+                            decoration: BoxDecoration(
+                              color:Theme.of(context).colorScheme.primary,
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            
-                            leading: Stack(
+                            child: const Icon(
+                              Icons.delete_outline_rounded,
+                              color: Colors.white,
+                            ),
+                          ),
+                          onDismissed: (_) {
+                            context.read<PlayerBloc>().add(
+                                  RemoveFromQueueEvent(index),
+                                );
+                          },
+                          child: Material(
+                            key: ValueKey(song.id),
+                            color: isPlaying
+                                ? Theme.of(context).colorScheme.primary
+                                      .withValues(alpha: 0.12)
+                                : Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                              ),
+                          
+                              leading: Stack(
                                 alignment: Alignment.center,
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(6),
-                                  child: QueryArtworkWidget(
-                                    keepOldArtwork: true,
-                                    id: int.parse(song.id),
-                                    type: ArtworkType.AUDIO,
-                                    artworkWidth: 48,
-                                    artworkHeight: 48,
-                                    artworkFit: BoxFit.cover,
-                                    nullArtworkWidget: Container(
-                                      width: 48,
-                                      height: 48,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        gradient: LinearGradient(
-                                          colors: [
-                                            Theme.of(context).colorScheme.primary,
-                                            Theme.of(context).colorScheme.secondary,
-                                          ],
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight,
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(6),
+                                    child: QueryArtworkWidget(
+                                      keepOldArtwork: true,
+                                      quality: 100,
+                                      size: 600,
+                                      id: int.parse(song.id),
+                                      type: ArtworkType.AUDIO,
+                                      artworkWidth: 48,
+                                      artworkHeight: 48,
+                                      artworkFit: BoxFit.cover,
+                                      nullArtworkWidget: Container(
+                                        width: 48,
+                                        height: 48,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                              Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary,
+                                            ],
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                          ),
                                         ),
-                                      ),
-                                      child: Icon(
-                                        Icons.album_rounded,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onPrimary,
-                                        size: 28,
+                                        child: Icon(
+                                          Icons.album_rounded,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onPrimary,
+                                          size: 28,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                if (isPlaying)
-      const Positioned.fill(
-        child: Center(
-          child: AnimatedEqualizer()
-        ),
-      ),
-                              ],
+                                  if (isPlaying)
+                                    const Positioned.fill(
+                                      child: Center(child: AnimatedEqualizer()),
+                                    ),
+                                ],
+                              ),
+                              title: Text(song.title),
+                              subtitle: Text(song.artist),
+                              trailing: ReorderableDragStartListener(
+                                index: index,
+                                child: const Icon(Icons.drag_handle_rounded),
+                              ),
+                              onTap: () {
+                                final playerBloc = context.read<PlayerBloc>();
+                          
+                                if (song.id == currentSong?.id) {
+                                  playerBloc.add(TogglePlayPauseEvent());
+                                } else {
+                                  playerBloc.add(
+                                    PlaySongEvent(song, playlist),
+                                  );
+                                }
+                              },
                             ),
-                            title: Text(song.title),
-                            subtitle: Text(song.artist),
-                            trailing: ReorderableDragStartListener(
-                              index: index,
-                              child: const Icon(Icons.drag_handle_rounded),
-                            ),
-                            onTap: () {
-  final playerBloc = context.read<PlayerBloc>();
-
-  if (song.id == state.currentSong.id) {
-    playerBloc.add(TogglePlayPauseEvent());
-  } else {
-    playerBloc.add(PlaySongEvent(song, state.playlist));
-  }
-},
                           ),
                         );
                       },

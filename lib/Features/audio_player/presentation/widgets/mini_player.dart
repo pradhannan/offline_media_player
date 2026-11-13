@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:media_player_app/Features/audio_player/Logic/Player/player_bloc.dart';
 import 'package:media_player_app/Features/audio_player/Logic/Player/player_event.dart';
 import 'package:media_player_app/Features/audio_player/Logic/Player/player_state.dart';
-import 'package:media_player_app/Features/audio_player/presentation/full_player_screen.dart';
+import 'package:media_player_app/Features/audio_player/presentation/Screens/full_player_screen.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/animated_equilizer.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/home_screen/mini_player_artwork.dart';
 

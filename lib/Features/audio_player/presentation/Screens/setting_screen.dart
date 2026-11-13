@@ -44,10 +44,44 @@ class SettingScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 SettingsContainer(
-                  title: 'UI',
-                  subtitle: 'Player interface and controls',
-                  onTap: () {},
-                ),
+  title: 'UI',
+  subtitle: 'Player interface and controls',
+  onTap: () {
+  final colors = Theme.of(context).colorScheme;
+
+  ScaffoldMessenger.of(context)
+    ..hideCurrentSnackBar()
+    ..showSnackBar(
+      
+      SnackBar(
+        content: Text(
+          'Wait for version 2',
+          style: TextStyle(
+            color: colors.onSurface,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        backgroundColor: colors.surface,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: colors.primary.withValues(alpha: 0.4)),
+        ),
+       
+        margin: EdgeInsets.only(
+          bottom: MediaQuery.of(context).size.height - 100,
+          left: 16,
+          right: 16,
+        ),
+        padding: const EdgeInsets.symmetric(
+  horizontal: 24,
+  vertical: 18,
+),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+},
+),
                 const SizedBox(height: 12),
                 SettingsContainer(
                   title: 'About',

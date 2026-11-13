@@ -22,22 +22,17 @@ class PlayerArtwork extends StatelessWidget {
         width: 325,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
-          child: Container(
-            color: colors.surfaceContainerHighest,
-            child: Container(
-              color: colors.surfaceContainerHighest,
-              child: QueryArtworkWidget(
-                id: songId,
-                type: ArtworkType.AUDIO,
-                quality: 100,
-                size: 600,
-                artworkWidth: 325,
-                artworkHeight: 325,
-                artworkQuality: FilterQuality.high,
-                keepOldArtwork: true,
-                nullArtworkWidget: _buildPlaceholder(colors),
-              ),
-            ),
+          child: QueryArtworkWidget(
+            id: songId,
+            type: ArtworkType.AUDIO,
+           quality: 100,
+               
+            size: 600,
+            artworkWidth: 325,
+            artworkHeight: 325,
+            artworkQuality: FilterQuality.high,
+            keepOldArtwork: true,
+            nullArtworkWidget: _buildPlaceholder(colors),
           ),
         ),
       ),

@@ -61,8 +61,41 @@ class AppearanceSettingsScreen extends StatelessWidget {
                     title: 'Cat Theme',
                     subtitle: 'Give your player a cat-inspired look',
                     switchValue: false,
-                    onSwitchChanged: (value) {},
-                  ),
+                    onSwitchChanged: (value) {
+  final colors = Theme.of(context).colorScheme;
+
+  ScaffoldMessenger.of(context)
+    ..hideCurrentSnackBar()
+    ..showSnackBar(
+      SnackBar(
+        content: Text(
+          '>"< Wait for upgraded version >.<',
+          style: TextStyle(
+            color: colors.onSurface,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        backgroundColor: colors.surface,
+        behavior: SnackBarBehavior.floating,
+        margin: EdgeInsets.only(
+          bottom: MediaQuery.of(context).size.height - 100,
+          left: 16,
+          right: 16,
+        ),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 24,
+          vertical: 18,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(
+            color: colors.primary.withValues(alpha: 0.4),
+          ),
+        ),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+},),
 
                   const SizedBox(height: 12),
 

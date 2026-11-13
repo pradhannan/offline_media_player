@@ -7,16 +7,17 @@ import 'package:media_player_app/Features/audio_player/Logic/Audio/audio_state.d
 import 'package:media_player_app/Features/audio_player/Logic/Library/library_bloc.dart';
 import 'package:media_player_app/Features/audio_player/Logic/Library/library_event.dart';
 import 'package:media_player_app/Features/audio_player/Logic/Library/library_state.dart';
-import 'package:media_player_app/Features/audio_player/Logic/Player/player_bloc.dart';
-import 'package:media_player_app/Features/audio_player/Logic/Player/player_event.dart';
-import 'package:media_player_app/Features/audio_player/Logic/Player/player_state.dart';
 import 'package:media_player_app/Features/audio_player/Logic/Search/search_bloc.dart';
 import 'package:media_player_app/Features/audio_player/Logic/Search/search_event.dart';
-import 'package:media_player_app/Features/audio_player/presentation/search_screen.dart';
-import 'package:media_player_app/Features/audio_player/presentation/setting_screen.dart';
+import 'package:media_player_app/Features/audio_player/presentation/folder_pages_homescreen/album_list.dart';
+import 'package:media_player_app/Features/audio_player/presentation/folder_pages_homescreen/artists_list.dart';
+import 'package:media_player_app/Features/audio_player/presentation/folder_pages_homescreen/genre_list.dart';
+import 'package:media_player_app/Features/audio_player/presentation/folder_pages_homescreen/playlist_list.dart';
+import 'package:media_player_app/Features/audio_player/presentation/Screens/search_screen.dart';
+import 'package:media_player_app/Features/audio_player/presentation/Screens/setting_screen.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/home_screen/folder_section.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/mini_player.dart';
-import 'package:on_audio_query/on_audio_query.dart';
+import 'package:media_player_app/Features/audio_player/presentation/widgets/song_tile.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -118,9 +119,7 @@ class HomeScreen extends StatelessWidget {
               ),
 
               BlocBuilder<LibraryBloc, LibraryState>(
-                  builder: (context, libraryState) {
-
-                   
+                builder: (context, libraryState) {
                   return BlocBuilder<AudioBloc, AudioState>(
                     builder: (context, state) {
                       if (state is AudioLoading) {
@@ -151,141 +150,56 @@ class HomeScreen extends StatelessWidget {
                           ),
                         );
                       } else if (state is AudioLoaded) {
-                        
                         if (state.songs.isEmpty) {
                           return const SliverToBoxAdapter(
-                            child: Center(child: Text('No songs found on device.')),
+                            child: Center(
+                              child: Text('No songs found on device.'),
+                            ),
                           );
                         }
-                  
-                        return BlocBuilder<PlayerBloc, PlayerState>(
-                          buildWhen: (previous, current) {
-                            if (previous is PlayerStatusState &&
-                                current is PlayerStatusState) {
-                              return previous.currentSong.id !=
-                                  current.currentSong.id;
-                            }
-                            return previous.runtimeType != current.runtimeType;
-                          },
-                          builder: (context, playerState) {
-                            final currentSongId = playerState is PlayerStatusState
-                                ? playerState.currentSong.id
-                                : null;
-                            return SliverList(
-                              delegate: SliverChildBuilderDelegate((
-                                context,
-                                index,
-                              ) {
-                                final colors = Theme.of(context).colorScheme;
-                                final song = state.songs[index];
-                                final isPlaying = song.id == currentSongId;
-                  
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                  ),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(16),
-                  
-                                      border: isPlaying
-                                          ? Border.all(
-                                              //color: Theme.of(context).colorScheme.primary,
-                                              width: 1.5,
-                                            )
-                                          : null,
-                                    ),
-                                    child: ListTile(
-                                      tileColor: isPlaying
-                                          ? colors.primary.withValues(alpha: 0.12)
-                                          : null,
-                  
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(16),
-                                      ),
-                                      leading: SizedBox(
-                                        width: 48,
-                                        height: 48,
-                                        child: Stack(
-                                          alignment: Alignment.center,
-                                          children: [
-                                            ClipOval(
-                                              child: QueryArtworkWidget(
-                                                id: int.parse(song.id),
-                                                type: ArtworkType.AUDIO,
-                                                artworkWidth: 48,
-                                                artworkHeight: 48,
-                                                artworkFit: BoxFit.cover,
-                                                nullArtworkWidget: Container(
-                                                  decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    gradient: LinearGradient(
-                                                      colors: [
-                                                        colors.primary,
-                                                        colors.secondary,
-                                                      ],
-                                                      begin: Alignment.topLeft,
-                                                      end: Alignment.bottomRight,
-                                                    ),
-                                                  ),
-                                                  child: Icon(
-                                                    Icons.album_rounded,
-                                                    color: colors.onPrimary,
-                                                    size: 28,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      title: Text(
-                                        song.title,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      subtitle: Text(
-                                        song.artist,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      trailing: IconButton(
-                                        icon: const Icon(Icons.more_vert),
-                                        onPressed: () {
-                                          // We'll add the menu actions next.
-                                        },
-                                      ),
-                                      onTap: () {
-                                        final playerState = context
-                                            .read<PlayerBloc>()
-                                            .state;
-                  
-                                        if (playerState is PlayerStatusState &&
-                                            song.id == playerState.currentSong.id) {
-                                          context.read<PlayerBloc>().add(
-                                            TogglePlayPauseEvent(),
-                                          );
-                                        } else {
-                                          context.read<PlayerBloc>().add(
-                                            PlaySongEvent(song, state.songs),
-                                          );
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                );
-                              }, childCount: state.songs.length),
-                            );
-                          },
+
+                        if (libraryState.selectedSection == 'Albums') {
+                          return AlbumList(songs: state.songs);
+                        }
+
+                        
+                        if (libraryState.selectedSection == 'Artists') {
+                          return ArtistList(songs: state.songs);
+                        }
+                        if (libraryState.selectedSection == 'Genres'){
+                          return GenreList(songs: state.songs);
+                        }
+
+                        if (libraryState.selectedSection == 'Playlists'){
+                          return PlaylistList(songs: state.songs);
+                        }
+
+
+
+
+                        return SliverPadding(
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                          sliver: SliverList(
+                            delegate: SliverChildBuilderDelegate((
+                              context,
+                              index,
+                            ) {
+                              final song = state.songs[index];
+
+                              return SongTile(song: song, );
+                            }, childCount: state.songs.length),
+                          ),
                         );
                       }
-                  
+
                       return const SliverToBoxAdapter(
-                        child: Center(child: Text('Press fetch to load songs.')),
+                        child: Center(
+                          child: Text('Press fetch to load songs.'),
+                        ),
                       );
                     },
                   );
-                }
+                },
               ),
               const SliverToBoxAdapter(child: SizedBox(height: 90)),
             ],

@@ -9,13 +9,24 @@ import 'package:media_player_app/Features/audio_player/Logic/Theme/theme_bloc.da
 import 'package:media_player_app/Features/audio_player/Logic/Theme/theme_state.dart';
 import 'package:media_player_app/Features/audio_player/data/audio_player_repository.dart';
 import 'package:media_player_app/Features/audio_player/data/audio_repository.dart';
-import 'package:media_player_app/Features/audio_player/presentation/home_screen.dart';
-
-
+import 'package:media_player_app/Features/audio_player/presentation/Screens/home_screen.dart';
+import 'package:media_player_app/Features/audio_player/Logic/Playlist/playlist_bloc.dart';
+import 'package:media_player_app/Features/audio_player/Logic/Playlist/playlist_event.dart';
+import 'package:media_player_app/Features/audio_player/data/playlist_repository.dart';
+import 'package:media_player_app/Features/audio_player/data/db/db_provider.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'Features/Core/app_theme.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await JustAudioBackground.init(
+    androidNotificationChannelId:
+        'com.example.media_player_app.channel.audio',
+    androidNotificationChannelName: 'Swarika Audio Playback',
+    androidNotificationOngoing: true,
+  );
+
   final audioRepository = AudioRepository();
   final audioPlayerRepository = AudioPlayerRepository();
 
@@ -54,7 +65,14 @@ class MyApp extends StatelessWidget {
   create: (context) => LibraryBloc(),
 ),
         BlocProvider<ThemeBloc>(
-  create: (context) => ThemeBloc(), // CHANGED
+  create: (context) => ThemeBloc(), 
+),
+BlocProvider<PlaylistBloc>(
+  create: (context) => PlaylistBloc(
+    repository: PlaylistRepository(database),
+  )
+    ..add(const LoadFavoritesEvent())
+    ..add(const LoadPlaylistsEvent()),
 ),
       ],
       child: BlocBuilder<ThemeBloc, ThemeState>(

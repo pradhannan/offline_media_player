@@ -1,17 +1,12 @@
-
 import 'package:flutter/material.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/collapsing_title.dart';
 import 'package:on_audio_query/on_audio_query.dart' hide SongModel;
 import 'package:media_player_app/Features/audio_player/domain/song_model.dart';
 
 class SongInfo extends StatelessWidget {
-
   final SongModel song;
 
-  const SongInfo({
-    super.key,
-    required this.song,
-  });
+  const SongInfo({super.key, required this.song});
 
   @override
   Widget build(BuildContext context) {
@@ -27,61 +22,56 @@ class SongInfo extends StatelessWidget {
               icon: const Icon(Icons.arrow_back),
               onPressed: () => Navigator.pop(context),
             ),
-           flexibleSpace: CollapsingTitle(title: "Song Info"),
+            flexibleSpace: CollapsingTitle(title: "Song Info"),
           ),
 
-         
           SliverPadding(
             padding: const EdgeInsets.all(16),
             sliver: SliverToBoxAdapter(
               child: Container(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: colors.surface,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: colors.outline),
                   boxShadow: const [
-                    BoxShadow(
-                      blurRadius: 6,
-                      offset: Offset(0, 3),
-                    ),
+                    BoxShadow(blurRadius: 6, offset: Offset(0, 3)),
                   ],
                 ),
                 child: Column(
                   children: [
-                    
-                      
-               
-ClipOval(
-  child: SizedBox(
-    height: 220,
-    width: 220,
-    child: QueryArtworkWidget(
-      keepOldArtwork: true,
-      id: int.parse(song.id),
-      type: ArtworkType.AUDIO,
-      artworkFit: BoxFit.cover,
-      nullArtworkWidget: Container(
-        color: colors.surfaceContainerHighest,
-        child: const Icon(
-          Icons.music_note_rounded,
-          size: 80,
-        ),
-      ),
-    ),
-  ),
-),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                     
+                      child: SizedBox(
+                        height: 220,
+                        width: double.infinity,
+                        child: QueryArtworkWidget(
+                          keepOldArtwork: true,
+                          id: int.parse(song.id),
+                          type: ArtworkType.AUDIO,
+                          quality: 100,
+                          size: 1000,
+                          artworkFit: BoxFit.cover,
+                          nullArtworkWidget: Container(
+                            color: colors.surfaceContainerHighest,
+                            child: const Icon(
+                              Icons.music_note_rounded,
+                              size: 80,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
 
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 08),
                     const Divider(),
-                    const SizedBox(height: 8),
                   ],
                 ),
               ),
             ),
           ),
 
-         
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
             sliver: SliverToBoxAdapter(
@@ -92,28 +82,24 @@ ClipOval(
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: colors.outline),
                   boxShadow: const [
-                    BoxShadow(
-                      blurRadius: 6,
-                      offset: Offset(0, 3),
-                    ),
+                    BoxShadow(blurRadius: 6, offset: Offset(0, 3)),
                   ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                   
-                    _buildInfoRow(context, 'Title', song.title),
-                    _buildInfoRow(context, 'Artist', song.artist),
-                    _buildInfoRow(context, 'Album', song.album),
+                    _buildInfoRow(context, 'Title:', song.title),
+                    _buildInfoRow(context, 'Artist:', song.artist),
+                    _buildInfoRow(context, 'Album:', song.album),
+                   //  _buildInfoRow(context, 'Genre:', song.genre),
 
                     _buildInfoRow(
                       context,
-                      'Duration',
+                      'Duration:',
                       _formatDuration(song.duration),
                     ),
 
-                    
-                    _buildInfoRow(context, 'File path', song.uri),
+                    _buildInfoRow(context, 'File path:', song.uri),
                   ],
                 ),
               ),
@@ -124,12 +110,7 @@ ClipOval(
     );
   }
 
-  
-  Widget _buildInfoRow(
-    BuildContext context,
-    String label,
-    String value,
-  ) {
+  Widget _buildInfoRow(BuildContext context, String label, String value) {
     final colors = Theme.of(context).colorScheme;
 
     return Padding(
@@ -141,10 +122,7 @@ ClipOval(
             width: 110,
             child: Text(
               label,
-              style: TextStyle(
-                color: colors.onSurfaceVariant,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: colors.onSurfaceVariant, fontSize: 14),
             ),
           ),
           Expanded(
@@ -161,7 +139,6 @@ ClipOval(
       ),
     );
   }
-
 
   String _formatDuration(int milliseconds) {
     final duration = Duration(milliseconds: milliseconds);

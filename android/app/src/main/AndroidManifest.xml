@@ -1,7 +1,11 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-<uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />    //on android 13+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">   //to suppress certain manifest merge warnings.
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />    //on android 13+
 //for older android version we need to provide storage permission
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.WAKE_LOCK" />  //	Allows the audio service to keep the device's CPU awake when necessary during playback
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />  //Allows the app to run a foreground service
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />   //Declares that the foreground service is being used for media playback. Required for target SDK 34.
     <application
         android:label="media_player_app"
         android:name="${applicationName}"
@@ -28,6 +32,26 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <service
+    android:name="com.ryanheise.audioservice.AudioService"
+    android:foregroundServiceType="mediaPlayback"
+    android:exported="true"
+    tools:ignore="Instantiatable">
+
+    <intent-filter>
+        <action android:name="android.media.browse.MediaBrowserService" />
+    </intent-filter>
+</service>
+
+<receiver
+    android:name="com.ryanheise.audioservice.MediaButtonReceiver"
+    android:exported="true"
+    tools:ignore="Instantiatable">
+
+    <intent-filter>
+        <action android:name="android.intent.action.MEDIA_BUTTON" />
+    </intent-filter>
+</receiver>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

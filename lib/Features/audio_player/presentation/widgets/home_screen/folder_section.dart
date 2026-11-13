@@ -62,8 +62,10 @@ class _FolderTile extends StatelessWidget {
       margin: const EdgeInsets.only(right: 12),
       padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),
       decoration: BoxDecoration(
-      color:
-             colors.surfaceContainerHighest,
+     // Give the selected folder a distinct background.
+color: isSelected
+    ? colors.primary
+    : colors.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(18),
       
         border: Border.all(
@@ -73,7 +75,10 @@ class _FolderTile extends StatelessWidget {
       ),
       
       child: Material(
-        color: colors.surfaceContainerHighest,
+        // Give the selected folder a distinct background.
+color: isSelected
+    ? colors.primary
+    : colors.surfaceContainerHighest,
     borderRadius: BorderRadius.circular(18),
         child: InkWell(
           onTap: onTap,
@@ -83,7 +88,12 @@ class _FolderTile extends StatelessWidget {
             title,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.labelLarge,
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+  color: isSelected
+      ? colors.onPrimary
+      : colors.onSurface,
+  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+),
           ),
         ),
       ),

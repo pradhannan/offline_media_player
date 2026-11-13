@@ -7,6 +7,7 @@
     final String artist;
     final String album;
     final String uri;
+    final String? artistId;
    
     final String? genre;
     
@@ -23,7 +24,7 @@
       required this.album,
       required this.uri,
       required this.duration,
-      this.artworkUri,
+      this.artworkUri,  this.artistId,
     });
 
     @override
@@ -35,6 +36,7 @@
       uri,
       duration,
       artworkUri,
+      artistId,
       
       genre,
       

@@ -20,6 +20,8 @@ class MiniPlayerArtwork extends StatelessWidget {
          keepOldArtwork: true,
         type: ArtworkType.AUDIO,
         artworkWidth: 48,
+        quality: 100,
+      size: 1000,
         artworkHeight: 48,
         artworkFit: BoxFit.cover,
         nullArtworkWidget: Container(

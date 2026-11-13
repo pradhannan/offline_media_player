@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:media_player_app/Features/audio_player/domain/song_model.dart';
-import 'package:media_player_app/Features/audio_player/presentation/album_page.dart';
+import 'package:media_player_app/Features/audio_player/presentation/Screens/album_page.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/collapsing_title.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/mini_player.dart';
 import 'package:media_player_app/Features/audio_player/presentation/widgets/song_tile.dart';
@@ -84,7 +84,9 @@ class ArtistsPage extends StatelessWidget {
                                 width: double.infinity,
                                 child: QueryArtworkWidget(
                                   id: int.tryParse(firstSong.id) ?? -1,
-                                  type: ArtworkType.ALBUM,
+                                   quality: 100,
+  size: 1000,
+                                  type: ArtworkType.AUDIO,
                                   artworkFit: BoxFit.cover,
                                   nullArtworkWidget: Container(
                                     color: Theme.of(context)
@@ -137,10 +139,11 @@ class ArtistsPage extends StatelessWidget {
                   delegate: SliverChildBuilderDelegate((context, index) {
                     final song = songs[index];
 
-                    return SongTile(song: song);
+                    return SongTile(song: song, playlist: songs,);
                   }, childCount: songs.length),
                 ),
               ),
+              const SliverToBoxAdapter(child: SizedBox(height: 90)),
             ],
           ),
           Align(alignment: Alignment.bottomCenter, child: MiniPlayer()),

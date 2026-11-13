@@ -1,5 +1,8 @@
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:media_player_app/Features/audio_player/presentation/widgets/collapsing_title.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -11,17 +14,16 @@ class AboutScreen extends StatelessWidget {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
+          // CHANGED: Use the same collapsing app bar as ArtistsPage
           SliverAppBar(
             pinned: true,
             expandedHeight: 160,
+            collapsedHeight: 64,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.pop(context);
-              },
+              onPressed: () => Navigator.pop(context),
             ),
-              title: const Text('About'),
-  centerTitle: false,
+            flexibleSpace: const CollapsingTitle(title: 'About'),
           ),
 
           SliverToBoxAdapter(
@@ -85,9 +87,7 @@ class AboutScreen extends StatelessWidget {
 
                   const SizedBox(height: 32),
 
-                  Divider(
-                    color: colors.outlineVariant,
-                  ),
+                  Divider(color: colors.outlineVariant),
 
                   const SizedBox(height: 24),
 
@@ -109,35 +109,48 @@ class AboutScreen extends StatelessWidget {
 
                   const SizedBox(height: 28),
 
-                  Divider(
-                    color: colors.outlineVariant,
-                  ),
+                  Divider(color: colors.outlineVariant),
 
                   const SizedBox(height: 20),
 
-                  // Libraries
+                  // CHANGED: Clickable GitHub link
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    leading:Icon(
-    Icons.code_rounded,
-    color: colors.primary,
-  ),
+                    leading: Icon(
+                      Icons.code_rounded,
+                      color: colors.primary,
+                    ),
                     title: Text(
-    'GitHub',
-    style: TextStyle(
-      color: colors.onSurface,
-      fontWeight: FontWeight.w600,
-    ),
-  ),
+                      'GitHub',
+                      style: TextStyle(
+                        color: colors.onSurface,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     subtitle: Text(
-                      'View the project source code \n https://github.com/pradhannan/offline_media_player',
+                      'View the project source code',
                       style: TextStyle(
                         color: colors.onSurfaceVariant,
                       ),
                     ),
-                 
+                    trailing: Icon(
+                      Icons.open_in_new_rounded,
+                      color: colors.onSurfaceVariant,
+                      size: 18,
+                    ),
+                    onTap: () async {
+                      final uri = Uri.parse(
+                        'https://github.com/pradhannan/offline_media_player',
+                      );
+
+                      await launchUrl(
+                        uri,
+                        mode: LaunchMode.externalApplication,
+                      );
+                    },
                   ),
 
+                  // Licenses
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: Icon(
